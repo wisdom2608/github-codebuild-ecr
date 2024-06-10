@@ -4,12 +4,16 @@ version: 0.2
 phases: 
   pre_build:
     commands:
+      - chmod +x build-image.sh
+      - ./version.sh -v minor
       - echo Logging to Amazon ECR...
       - aws --version
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - REPOSITORY_URI=843825445314.dkr.ecr.us-east-2.amazonaws.com/mama
       - COMMIT_HASH=$(CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      # - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - IMAGE_TAG=$(steps.increment-git-tag.outputs.git-tag)
+
   build:
     commands:
       - echo Build started 'date'
