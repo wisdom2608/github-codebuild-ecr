@@ -6,7 +6,7 @@ phases:
     commands:
       - echo Logging to Amazon ECR...
       - aws --version
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --on-include-email)
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --pasword-stdin $AWS_ACCOUNT_ID.dkr.ecr.AWS_DEFAULT_REGION.amazonaws.com
       - REPOSITORY_URI=843825445314.dkr.ecr.us-east-2.amazonaws.com/codecommit-codebuild-ecr
       - COMMIT_HASH=$(CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
@@ -14,13 +14,15 @@ phases:
     commands:
       - echo Build started 'date'
       - echo Building the Docker image...
-      - docker build -t $RESPOSITORY_URI:$IMAGE_TAG .
+      - docker build -t $RESPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Build complete on 'date'
       - echo pushing the Docker image...
+      - docker push $RESPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo writing image definition file...
 
 ##Prerequisite
 # 1) Create an ECR in the same region as that of Codebuild. The repository will habor the image to be pushed from github.
