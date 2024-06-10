@@ -4,7 +4,7 @@ version: 0.2
 phases: 
   pre_build:
     commands:
-      - chmod +x build-image.sh
+      - chmod +x version.sh
       - ./version.sh -v minor
       - echo Logging to Amazon ECR...
       - aws --version
