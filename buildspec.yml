@@ -1,0 +1,47 @@
+#Build and push a Docker Image to AWS ECR using AWS Codebuild with github as a source provider.
+version: 0.2
+
+phases: 
+  pre_build:
+    commands:
+      - echo Logging to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --on-include-email)
+      - REPOSITORY_URI=843825445314.dkr.ecr.us-east-2.amazonaws.com/codecommit-codebuild-ecr
+      - COMMIT_HASH=$(CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+  build:
+    commands:
+      - echo Build started 'date'
+      - echo Building the Docker image...
+      - docker build -t $RESPOSITORY_URI:$IMAGE_TAG .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Build complete on 'date'
+      - echo pushing the Docker image...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+##Prerequisite
+# 1) Create an ECR in the same region as that of Codebuild. The repository will habor the image to be pushed from github.
+# 2) Create a codebuild project:
+# - a) For source, select Github.
+# - b) For repository, select the repo from github.
+# - c) For Environment, select environment image.
+# - d) For operating system, select ubuntu.
+# - e) For Runtime, select standarg
+# - f) For image, select the latest version.
+# - g) Select prilledged to execute docker commands inside codebuild.
+
+# 3) For environment variable
+
+# 4) Set IAM permisions for Codebuild to login to AWS ECR. To set IAM permissions:
+   # (i) Go to IAM service dash board,
+   # (ii) Click on Policies,
+   # (iii) Search for *AmazonEC2containerRegistryFullAccess* on the search bar,
+   # (iv) Select the policy,
+   # (vi) Click on *action* and select *attach* to  grant the full access policy to codebuild,
+   # (vii) Select the name of the project you just created on codebuild, and click on *attach policy*.
+   # (viii) click on *start build* to start building the image.
+
+# 4) Copy the ECR repository URL and paste on line 10. 
