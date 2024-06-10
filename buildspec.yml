@@ -7,20 +7,23 @@ phases:
       - echo Logging to Amazon ECR...
       - aws --version
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - REPOSITORY_URI=843825445314.dkr.ecr.us-east-2.amazonaws.com/codecommit-codebuild-ecr
+      # - REPOSITORY_URI=843825445314.dkr.ecr.us-east-2.amazonaws.com/codecommit-codebuild-ecr
+      - REPOSITORY_NAME=mama
       - COMMIT_HASH=$(CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
       - echo Build started 'date'
       - echo Building the Docker image...
-      - docker build -t $RESPOSITORY_URI:$IMAGE_TAG .
+      # - docker build -t $RESPOSITORY_URI:$IMAGE_TAG .
+      - docker build -t $RESPOSITORY_NAME:$IMAGE_TAG .
+
 
   post_build:
     commands:
       - echo Build complete on 'date'
       - echo pushing the Docker image...
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_NAME:$IMAGE_TAG
       - echo writing image definition file...
 
 ##Prerequisite
@@ -28,13 +31,19 @@ phases:
 # 2) Create a codebuild project:
 # - a) For source, select Github.
 # - b) For repository, select the repo from github.
-# - c) For Environment, select environment image.
-# - d) For operating system, select ubuntu.
-# - e) For Runtime, select standarg
-# - f) For image, select the latest version.
-# - g) Select prilledged to execute docker commands inside codebuild.
+# - c) For Primary source webhook events, check "Rebuild every time a code change is pushed to this repository" This will trigger codebuild automatically whenever a push is made on the sesired branch.
+# - d) For Environment, select environment image.
+# - e) For operating system, select ubuntu.
+# - f) For Runtime, select standarg
+# - g) For image, select the latest version.
+# - h) Select prilledged to execute docker commands inside codebuild.
 
-# 3) For environment variable
+# 3) For environment variables, put the:
+# - a) value of AWS_DEFAULT_REGION as the region you are working in.
+# - b) value of IMAGE_TAG as latest
+# - c) value of AWS_ACCOUNT_ID as your account ID
+# - d) value of RESPOSITORY_URI as your ecr repo URL
+
 
 # 4) Set IAM permisions for Codebuild to login to AWS ECR. To set IAM permissions:
    # (i) Go to IAM service dash board,
