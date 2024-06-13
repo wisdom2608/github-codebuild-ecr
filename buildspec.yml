@@ -7,7 +7,7 @@ phases:
       - echo Logging to Amazon ECR...
       - aws --version
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - REPOSITORY_URI=843825445314.dkr.ecr.us-east-2.amazonaws.com/mama
+      - REPOSITORY_URI=843825445314.dkr.ecr.us-east-2.amazonaws.com/favour-samuel
       - COMMIT_HASH=$(CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
       
@@ -29,7 +29,7 @@ phases:
 # 1) Create an ECR in the same region as that of Codebuild. The repository will habor the image to be pushed from github.
 # 2) Create a codebuild project:
 # - a) For source, select Github.
-# - b) For repository, select the repo from github.
+# - b) For repository, select "Repository in my GitHub account" then go to your github account and select thr repo name.
 # - c) For Primary source webhook events, check "Rebuild every time a code change is pushed to this repository" This will trigger codebuild automatically whenever a push is made on the sesired branch.
 # - d) For Environment, select environment image.
 # - e) For operating system, select ubuntu.
