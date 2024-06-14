@@ -25,7 +25,7 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo writing image definition file...
 
-##Prerequisite
+                             ## STEPS !!!
 # 1) Create an ECR in the same region as that of Codebuild. The repository will habor the image to be pushed from github.
 # 2) Create a codebuild project:
 # - a) For source, select Github.
@@ -54,4 +54,3 @@ phases:
    # (viii) click on *start build* to start building the image.
 
 # 4) Copy the ECR repository URL and paste on line 10. 
-#ok
