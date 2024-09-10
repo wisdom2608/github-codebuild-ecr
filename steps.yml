@@ -1,0 +1,29 @@
+## STEPS !!!
+# 1) Create an ECR in the same region as that of Codebuild. The repository will habor the image to be pushed from github.
+# 2) Create a codebuild project:
+# - a) For source, select Github.
+# - b) For repository, select "Repository in my GitHub account" then go to your github account and select thr repo name.
+# - c) For Primary source webhook events, check "Rebuild every time a code change is pushed to this repository" This will trigger codebuild automatically whenever a push is made on the sesired branch.
+# - d) For Environment, select environment image.
+# - e) For operating system, select ubuntu.
+# - f) For Runtime, select standarg
+# - g) For image, select the latest version.
+# - h) Select prilledged to execute docker commands inside codebuild.
+
+# 3) For environment variables, put the:
+# - a) value of AWS_DEFAULT_REGION as the region you are working in.
+# - b) value of IMAGE_TAG as latest
+# - c) value of AWS_ACCOUNT_ID as your account ID
+# - d) value of RESPOSITORY_URI as your ecr repo URL
+
+
+# 4) Set IAM permisions for Codebuild to login to AWS ECR. To set IAM permissions:
+   # (i) Go to IAM service dash board,
+   # (ii) Click on Policies,
+   # (iii) Search for *AmazonEC2containerRegistryFullAccess* on the search bar,
+   # (iv) Select the policy,
+   # (vi) Click on *action* and select *attach* to  grant the full access policy to codebuild,
+   # (vii) Select the name of the project you just created on codebuild, and click on *attach policy*.
+   # (viii) click on *start build* to start building the image.
+
+# 4) Copy the ECR repository URL and paste on line 10. 
